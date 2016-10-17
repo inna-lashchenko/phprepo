@@ -8,8 +8,6 @@ $phone = $_POST["phone"];
 $message = $_POST["message"];
 $id = $_POST["id"];
 
-
-
 try {
     $conn = new PDO('mysql:host=localhost; dbname=test; charset=utf8', $username, $password );
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -19,6 +19,19 @@ text-align:center;
 </style>
   <script>
     $(document).ready(function () {
+        $('.js-button').click(function () {
+            lol = $("#formx").find('tbody:last-child>tr:first-child').value;
+            console.log(lol);
+            $("#formx").find('tbody').append('<tr>'+
+            '<td ><input class="form-control" type="text" name="id" value=lol></td>'+
+            '<td ><input class="form-control" type="text" name="name"></td>'+
+            '<td ><input class="form-control" type ="text" name="email"></td>'+
+            '<td ><input class="form-control" type="text" name="phone"></td>'+
+            '<td ><input class="form-control" type="text" name="message"></td>'+
+            '<td><input class="btn btn-success js-but" type="submit" value="Save" name="save"></td>'+
+            '<td><input class="btn btn-warning js-but" type="submit" value="Delete" name="delete"></td>'+
+            '</tr>');
+        });
       $('.js-but').click(function () {
         var msg = $(this).parents('tr').find('input').serialize();
         var str = $(this).val();
@@ -26,7 +39,6 @@ text-align:center;
         if(str=="Save") res='change.php';
         else {
           res='delete.php';
-          $(this).parents('tr').style.visibility="hidden";
         }
         $.ajax({
           type: 'POST',
@@ -146,7 +158,7 @@ try {
              foreach($values as $value) {
 
                  echo "<tr>";
-                 echo "<td ><input class=\"form-control disabled\" type='text' name='id' value='$value[id]' readonly></td>";
+                 echo "<td ><input class=\"form-control\" type='text' name='id' value='$value[id]' readonly></td>";
                  echo "<td ><input class=\"form-control\" type='text' name='name' value='$value[name]'></td>";
                  echo "<td ><input class=\"form-control\" type ='text' name='email' value='$value[email]'></td>";
                  echo "<td ><input class=\"form-control\" type='text' name='phone' value='$value[phone]'></td>";
@@ -155,12 +167,10 @@ try {
                  echo "<td><input class=\"btn btn-warning js-but\" type='submit' value='Delete' name='delete'></td>";
                  echo "</tr>";
 
-
-
              }
-
 echo "</table>";
-  echo "</form>";
+    echo "<input class=\"btn btn-warning js-button center-block\" type='submit' value='Create new record' name='new'>";
+    echo "</form>";
 
     }
     catch(PDOException $e)
