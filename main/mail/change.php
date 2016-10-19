@@ -16,7 +16,13 @@ try {
     $conn->beginTransaction();
 
     $sql = ("UPDATE test SET name='$name', email='$email', phone='$phone', message='$message' WHERE id=$id");
-    $conn->exec($sql);
+
+    $count = $conn->exec($sql);
+    if ($count == 0){
+        $sql = ("INSERT INTO test (id, name, email, phone, message) values ('$id','$name', '$email', '$phone', '$message')");
+        $count = $conn->exec($sql);
+    }
+
     $conn->commit();
     echo "<span style='margin-left: 20px; color:lightseagreen; font-weight: bold;'>Data updated! ;)</span><br><br>";
 

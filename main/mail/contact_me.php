@@ -18,41 +18,46 @@ text-align:center;
   }
 </style>
   <script>
-    $(document).ready(function () {
-        $('.js-button').click(function () {
-            lol = $("#formx").find('tbody:last-child>tr:first-child').value;
-            console.log(lol);
-            $("#formx").find('tbody').append('<tr>'+
-            '<td ><input class="form-control" type="text" name="id" value=lol></td>'+
-            '<td ><input class="form-control" type="text" name="name"></td>'+
-            '<td ><input class="form-control" type ="text" name="email"></td>'+
-            '<td ><input class="form-control" type="text" name="phone"></td>'+
-            '<td ><input class="form-control" type="text" name="message"></td>'+
-            '<td><input class="btn btn-success js-but" type="submit" value="Save" name="save"></td>'+
-            '<td><input class="btn btn-warning js-but" type="submit" value="Delete" name="delete"></td>'+
-            '</tr>');
-        });
-      $('.js-but').click(function () {
-        var msg = $(this).parents('tr').find('input').serialize();
-        var str = $(this).val();
-        var res="";
-        if(str=="Save") res='change.php';
-        else {
-          res='delete.php';
-        }
-        $.ajax({
-          type: 'POST',
-          url: res,
-          data: msg,
-          success: function(data) {
-            $('#results').html(data);
-          },
-          error:  function(xhr, str){
-            alert('Возникла ошибка: ' + xhr.responseCode);
-          }
-        });
-      })
-    })
+      $(document).ready(function(){
+          $('#formx').on('click', '.js-button', function () {
+              var lol = +$("#formx > table > tbody > tr:last-child [name=id]").val()+1;
+              $("#formx").find('tbody').append('<tr>'+
+                  '<td ><input class="form-control" type="text" name="id" readonly></td>'+
+                  '<td ><input class="form-control" type="text" name="name"></td>'+
+                  '<td ><input class="form-control" type ="text" name="email"></td>'+
+                  '<td ><input class="form-control" type="text" name="phone"></td>'+
+                  '<td ><input class="form-control" type="text" name="message"></td>'+
+                  '<td><input class="btn btn-success js-but" type="submit" value="Save" name="save"></td>'+
+                  '<td><input class="btn btn-warning js-but" type="submit" value="Delete" name="delete"></td>'+
+                  '</tr>');
+              $("#formx > table > tbody > tr:last-child [name=id]").val(lol);
+          })
+
+
+          $('#formx').on('click', '.js-but', function (e) {
+
+            var msg = $(this).parents('tr').find('input').serialize();
+            var str = $(this).val();
+            var res="";
+            if(str=="Save") {
+                res='change.php';
+            }
+            else {
+              res='delete.php';
+            }
+            $.ajax({
+              type: 'POST',
+              url: res,
+              data: msg,
+              success: function(data) {
+                $('#results').html(data);
+              },
+              error:  function(xhr, str){
+                alert('Возникла ошибка: ' + xhr.responseCode);
+              }
+            });
+          })
+      });
   </script>
 </head>
 <body>
