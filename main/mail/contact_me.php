@@ -1,8 +1,14 @@
+<?php
+if(!isset($_COOKIE["user"])){
+  include_once "authorization.php";
+  exit;
+}
+?>
 <html>
 <head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
   <style>
 h1{
@@ -10,10 +16,6 @@ text-align:center;
 }
   th{
     text-align: center;
-  }
-  .inp{
-    margin-left: 20px;
-    margin-bottom: 30px;
   }
 </style>
   <script>
@@ -30,7 +32,7 @@ text-align:center;
                   '<td><input class="btn btn-warning js-but" type="submit" value="Delete" name="delete"></td>'+
                   '</tr>');
               $("#formx > table > tbody > tr:last-child [name=id]").val(lol);
-          })
+          });
 
 
           $('#formx').on('click', '.js-but', function (e) {
@@ -56,6 +58,18 @@ text-align:center;
               }
             });
           })
+        $('#deleteCookie').on('click', '#logOut', function (e) {
+          $.ajax({
+            type: 'POST',
+            url: 'delete_cookie.php',
+            success: function(data) {
+              location.href='contact_me.php';
+            },
+            error:  function(xhr, str){
+              alert('Возникла ошибка: ' + xhr.responseCode);
+            }
+          });
+        })
       });
   </script>
 </head>
@@ -64,66 +78,15 @@ text-align:center;
 <?php
 
 $name = $email = $phone = $message = "";
-//
-//if ($_SERVER["REQUEST_METHOD"] == "POST") {
-//  if (empty($_POST["name"])) {
-//    $nameErr = "Name is required";
-//  } else {
-//    $name = test_input($_POST["name"]);
-//    // check if name only contains letters and whitespace
-//    if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
-//      $nameErr = "Only letters and white space allowed";
-//    }
-//  }
-//
-//  if (empty($_POST["email"])) {
-//    $emailErr = "Email is required";
-//  } else {
-//    $email = test_input($_POST["email"]);
-//    // check if e-mail address is well-formed
-//    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-//      $emailErr = "Invalid email format";
-//    }
-//  }
-//
-//  if (empty($_POST["phone"])) {
-//    $website = "";
-//  } else {
-//    $phone = test_input($_POST["phone"]);
-//    // check if URL address syntax is valid (this regular expression also allows dashes in the URL)
-//    if(!preg_match("/^[0-9]{10,10}+$/", $phone)) {
-//      $phoneErr = "Invalid URL";
-//    }
-//  }
-//
-//  if (empty($_POST["message"])) {
-//    $message = "";
-//  } else {
-//    $message = test_input($_POST["message"]);
-//  }
-//}
-//
-//function test_input($data) {
-//  $data = trim($data);
-//  $data = stripslashes($data);
-//  $data = htmlspecialchars($data);
-//  return $data;
-//}
-//
-//    echo "<div class='inp'><h2>Your Input:</h2>";
-//    echo "<b>Your name: </b>". $name;
-//    echo "<br>";
-//    echo "<b>Your e-mail: </b>". $email;
-//    echo "<br>";
-//    echo "<b>Your phone: </b>" . $phone;
-//    echo "<br>";
-//    echo "<b>Your message: </b>" . $message;
-//    echo "<br></div>";
+echo "<form id='deleteCookie' action='action=\"javascript:void(null);\"' method='post'>";
+echo "<button type='button' id='logOut' class=\"btn btn-danger js-button pull-right\" style='margin:10px 10px;'>Log out</button></form>";
+
    echo "<div id='results'></div>";
 
 
 $username = "root";
 $password = "kostyaklushkin23";
+
 
 echo "<form method='post' id='formx' action=\"javascript:void(null);\">";
 
@@ -143,10 +106,6 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $conn->beginTransaction();
 
-//        $sql = ("INSERT INTO test (name, email, phone, message) values ('$name', '$email', '$phone', '$message')");
-//        $conn->exec($sql);
-//        $conn->commit();
-
         $stmt = $conn->prepare("SELECT id, name, email, phone, message FROM test");
         $stmt->execute();
 
@@ -154,8 +113,6 @@ try {
              // set the resulting array to associative
              $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
              $values = $stmt->fetchAll();
-
-//            var_dump($values);die();
 
              foreach($values as $value) {
 

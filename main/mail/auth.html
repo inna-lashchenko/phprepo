@@ -1,0 +1,79 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#auth').submit(function () {
+                var login = $('#login').val();
+                var password = $('#password').val();
+                if(!login||!password){
+                    $('#results').html("Fill empty fields!");
+                }
+                else{
+                    var msg = $(this).serialize();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'auth_valid.php',
+                        data: msg,
+                        success: function(data) {
+                            $('#results').html(data);
+                            if (data == "OK") {
+                                location.href='contact_me.php';
+                            }
+                        },
+                        error:  function(xhr, str){
+                            alert('Возникла ошибка: ' + xhr.responseCode);
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+<form class="form-horizontal" id = "auth" action="javascript:void(null);" method="post">
+    <fieldset>
+        <legend class="text-center">Authorization</legend>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="login">Login:</label>
+            <div class="col-md-4">
+                <input id="login" name="login" type="text" placeholder="Enter login" class="form-control input-md">
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="password">Password:</label>
+            <div class="col-md-4">
+                <input id="password" name="password" type="password" placeholder="Enter password" class="form-control input-md">
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label" for="singlebutton"></label>
+            <div class="col-md-4">
+                <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary" data-toggle="modal" data-target="#myModal">OK</button>
+            </div>
+        </div>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p id="results"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </fieldset>
+</form>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <?php
-if(isset($_POST["singlebutton"])){
+if(isset($_POST)){
     $username = "root";
     $password = "kostyaklushkin23";
 
@@ -16,10 +16,14 @@ if(isset($_POST["singlebutton"])){
 
         $result = $result->fetchColumn();
         if($result==false){
-            echo "SUCK DICK";
+            echo "WRONG PASSWORD OR LOGIN";
         }
         else
-            echo "DON'T SUCK ";
+        {
+            echo "OK";
+            setcookie("user", $login, time()+3600,'/');
+        }
+
 
     }
     catch(PDOException $e)
