@@ -15,7 +15,7 @@
     <link href="main/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="main/css/leaves.css" type="text/css" media="screen" charset="utf-8">
     <!-- The leaves.js file creates the leaves -->
-    <script src="main/js/leaves.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="main/js/leaves.js" type="text/javascript" charset="utf-8"></script>-->
 
     <!-- Custom Fonts -->
     <link href="main/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -26,6 +26,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <!-- Theme CSS -->
     <link href="main/css/agency.min.css" rel="stylesheet">
+    <link href="main/css/reg.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -62,14 +63,32 @@
                         }
                     });
                 }
+            });
+            $('#registration').submit(function () {
+                var password = $('#password').val();
+                var password_confirmation = $('#password_confirmation').val();
+                if(password==password_confirmation){
+                    var msg = $(this).serialize();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'main/mail/registration.php',
+                        data: msg,
+                        success: function(){
+                            $('#register').hide();
+
+
+                        },
+                        error:  function(xhr, str){
+                            alert('Возникла ошибка: ' + xhr.responseCode);
+                        }
+                    });
+                }
             })
         });
     </script>
 </head>
 
 <body id="page-top" class="index">
-<div id="leafContainer">
-
     <!-- Navigation -->
     <nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
         <div class="container">
@@ -106,12 +125,16 @@
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
                     </li>
+                    <li>
+                        <a class="page-scroll" data-toggle="modal" data-target="#register" style="cursor:pointer;">Sign in/Sign up</a>
+                    </li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container-fluid -->
     </nav>
+
 
     <!-- Header -->
     <header>
@@ -474,8 +497,6 @@
                         </div>
                         <div id="myModal" class="modal fade" role="dialog">
                             <div class="modal-dialog">
-
-
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -492,6 +513,57 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div name="register" id="register" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+
+                    <!-- Modal content-->
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8 col-md-6" style="padding:30px;">
+                                <div class="row"><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+                                <form id="registration" method="post" action="javascript:void(null);">
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" name="first_name" id="first_name" class="form-control input-lg" placeholder="First Name" tabindex="1">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" name="last_name" id="last_name" class="form-control input-lg" placeholder="Last Name" tabindex="2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="display_name" id="display_name" class="form-control input-lg" placeholder="Display Name" tabindex="3">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="email" name="email" id="e-mail" class="form-control input-lg" placeholder="Email Address" tabindex="4">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password" tabindex="5">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-lg" placeholder="Confirm Password" tabindex="6">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 col-md-6"><button type="submit" id="reg" class="btn btn-primary btn-block btn-lg" tabindex="7">Register</button></div>
+                                        <div class="col-xs-6 col-md-6"><a href="#" class="btn btn-success btn-block btn-lg">Sign In</a></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -721,8 +793,7 @@
 
 
     <!-- Theme JavaScript -->
-    <script src="main/js/agency.min.js"></script>
-</div>
+    <!--<script src="main/js/agency.min.js"></script>-->
 </body>
 
 </html>
