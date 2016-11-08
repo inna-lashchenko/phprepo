@@ -18,9 +18,12 @@
                         url: 'auth_valid.php',
                         data: msg,
                         success: function(data) {
-                            $('#results').html(data);
                             if (data == "OK") {
+                                $('#myModal').modal('toggle');
                                 location.href='contact_me.php';
+                            }
+                            else{
+                                $('#results').html(data);
                             }
                         },
                         error:  function(xhr, str){

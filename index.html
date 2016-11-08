@@ -33,6 +33,7 @@
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
     <![endif]-->
     <script>
         $(document).ready(function(){
@@ -52,9 +53,12 @@
                         data: msg,
                         success: function(data) {
                             console.log(data);
-                            $('#results').html(data);
                             if (data == "OK") {
                                 location.href='/main/mail/authorization.php';
+                                $('#myModal').modal('toggle');
+                            }
+                            else {
+                                $('#results').html(data);
                             }
 //                        location.href='kek';
                         },
@@ -74,7 +78,7 @@
                         url: 'main/mail/registration.php',
                         data: msg,
                         success: function(){
-                            $('#register').hide();
+                            $('#register').modal('toggle');
 
 
                         },
@@ -83,12 +87,19 @@
                         }
                     });
                 }
+            });
+            $('#signIn').on('click', function(){
+
             })
         });
     </script>
 </head>
 
 <body id="page-top" class="index">
+<script type="text/javascript" src="//vk.com/js/api/openapi.js?136"></script>
+<script type="text/javascript">
+    VK.init({apiId: 5718162});
+</script>
     <!-- Navigation -->
     <nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
         <div class="container">
@@ -558,13 +569,33 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-6 col-md-6"><button type="submit" id="reg" class="btn btn-primary btn-block btn-lg" tabindex="7">Register</button></div>
-                                        <div class="col-xs-6 col-md-6"><a href="#" class="btn btn-success btn-block btn-lg">Sign In</a></div>
+                                        <div class="col-xs-6 col-md-6"><a href="#" id="signIn" class="btn btn-success btn-block btn-lg" data-toggle="modal" data-target="#signInModal">Sign In</a></div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="signInModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Sign in</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="vk_auth"></div>
+                        <script type="text/javascript">
+                            VK.Widgets.Auth("vk_auth", {width: "200px"});
+                        </script>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
