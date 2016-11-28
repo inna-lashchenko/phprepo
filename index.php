@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+require_once('vendor/autoload.php');
+
+$fb = new Facebook\Facebook([
+    'app_id' => '1734936170162588',
+    'app_secret' => 'b3af21a7c32756d59bb6e4c9011a9f70',
+    'default_graph_version' => 'v2.8',
+]);
+
+$helper = $fb->getRedirectLoginHelper();
+$loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,6 +41,24 @@
     <!-- Theme CSS -->
     <link href="main/css/agency.min.css" rel="stylesheet">
     <link href="main/css/reg.css" rel="stylesheet">
+    <style>
+        .nav li a:hover{
+            background-color: transparent;
+            color:white;
+            cursor: pointer;
+
+        }
+        .fa-facebook-square{
+            font-size:52px;
+            margin-left:20px;
+            padding-top: 20px;
+            color:black;
+            display:block;
+        }
+        .fa-facebook-square:hover{
+            text-decoration: none;
+        }
+    </style>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -69,6 +101,7 @@
                 }
             });
             $('#registration').submit(function () {
+
                 var password = $('#password').val();
                 var password_confirmation = $('#password_confirmation').val();
                 if(password==password_confirmation){
@@ -79,8 +112,6 @@
                         data: msg,
                         success: function(){
                             $('#register').modal('toggle');
-
-
                         },
                         error:  function(xhr, str){
                             alert('Возникла ошибка: ' + xhr.responseCode);
@@ -88,18 +119,28 @@
                     });
                 }
             });
-            $('#signIn').on('click', function(){
-
-            })
-        });
+            $('#autho').submit(function () {
+                    var msg = $(this).serialize();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'main/mail/authorization_main.php',
+                        data: msg,
+                        success: function(data){
+                            console.log(data);
+                            $('#signInModal').modal('toggle');
+                            location.reload();
+                        },
+                        error:  function(xhr, str){
+                            alert('Возникла ошибка: ' + xhr.responseCode);
+                        }
+                    });
+                });
+            });
     </script>
 </head>
 
 <body id="page-top" class="index">
-<script type="text/javascript" src="//vk.com/js/api/openapi.js?136"></script>
-<script type="text/javascript">
-    VK.init({apiId: 5718162});
-</script>
+
     <!-- Navigation -->
     <nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
         <div class="container">
@@ -137,7 +178,18 @@
                         <a class="page-scroll" href="#contact">Contact</a>
                     </li>
                     <li>
-                        <a class="page-scroll" data-toggle="modal" data-target="#register" style="cursor:pointer;">Sign in/Sign up</a>
+                        <?php
+                        if(isset($_SESSION['facebook_user_name'])){
+                            echo "<a class='page-scroll dropdown-toggle' style='cursor:pointer;' data-toggle=\"dropdown\">".$_SESSION['facebook_user_name'];
+                            echo "<span class=\"caret\"></span></a>";
+                            echo "<ul class='dropdown-menu' style='background-color: transparent;'>";
+                            echo "<li class='dropdown-item'><a class='menu_item' href='main/mail/unlogin.php'>LOG OUT</a></li>";
+                            echo "</ul>";
+                        }
+                        else{
+                            echo "<a class=\"page-scroll\" data-toggle=\"modal\" data-target=\"#signInModal\" style=\"cursor:pointer;\">Sign in/Sign up</a>";
+                        }
+                        ?>
                     </li>
                 </ul>
             </div>
@@ -530,12 +582,15 @@
         <div name="register" id="register" class="modal fade" role="dialog">
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
-
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Registration form</h4>
+                    </div>
                     <!-- Modal content-->
                     <div class="container">
                         <div class="row">
                             <div class="col-xs-12 col-sm-8 col-md-6" style="padding:30px;">
-                                <div class="row"><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+<!--                                <div class="row"><button type="button" class="close" data-dismiss="modal">&times;</button></div>-->
                                 <form id="registration" method="post" action="javascript:void(null);">
                                     <div class="row">
                                         <div class="col-xs-6 col-sm-6 col-md-6">
@@ -549,11 +604,41 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <input type="text" name="display_name" id="display_name" class="form-control input-lg" placeholder="Display Name" tabindex="3">
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <span class="warning text-danger" id="wfirst_name">*Incorrect first name</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <span class="warning text-danger" id="wlast_name">*Incorrect last name</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <input type="email" name="email" id="e-mail" class="form-control input-lg" placeholder="Email Address" tabindex="4">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <input type="text" name="display_name" id="display_name" class="form-control input-lg" placeholder="Display Name" tabindex="3">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <span class="warning text-danger">*Incorrect display name</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <input type="email" name="email" id="e-mail" class="form-control input-lg" placeholder="Email Address" tabindex="4">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <span class="warning text-danger">*Incorrect e-mail</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-6 col-sm-6 col-md-6">
@@ -568,8 +653,15 @@
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <span class="warning text-danger">*Incorrect password</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-xs-6 col-md-6"><button type="submit" id="reg" class="btn btn-primary btn-block btn-lg" tabindex="7">Register</button></div>
-                                        <div class="col-xs-6 col-md-6"><a href="#" id="signIn" class="btn btn-success btn-block btn-lg" data-toggle="modal" data-target="#signInModal">Sign In</a></div>
+                                        <div class="col-xs-6 col-md-6"><a href="#" id="signIn" class="btn btn-success btn-block btn-lg" data-toggle="modal" data-target="#signInModal" data-dismiss="modal">Sign In</a></div>
                                     </div>
                                 </form>
                             </div>
@@ -586,14 +678,42 @@
                         <h4 class="modal-title">Sign in</h4>
                     </div>
                     <div class="modal-body">
-                        <div id="vk_auth"></div>
-                        <script type="text/javascript">
-                            VK.Widgets.Auth("vk_auth", {width: "200px"});
-                        </script>
+                        <form id="autho" method="post" action="javascript:void(null);">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6 col-sm-offset-3">
+                                <div class="form-group input-group">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                    <input type="text" name="login" id="login" class="form-control input-lg" placeholder="Login" tabindex="1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6 col-sm-offset-3">
+                                <div class="form-group input-group">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                    <input type="password" name="pass" id="pass" class="form-control input-lg" placeholder="Password" tabindex="5">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 control">
+                                <div style="font-size:16px; text-align: center" >
+                                    Don't have an account?
+                                    <a href="#" data-toggle="modal" data-target="#register" data-dismiss="modal">
+                                        Sign Up Here
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <div class="row">
+                            <div class="col-xs-3 col-md-3 col-md-offset-1"><button type="submit" id="auth_submit" class="btn btn-success btn-block btn-lg" style="margin-left:30px">OK</button></div>
+                            <?php echo'<div class="col-xs-6 col-md-6"><a href="' . $loginUrl . '" class="btn btn-primary btn-block btn-lg" style="margin-left:20px">Sign in with facebook</a></div>'?>
+                        </div>
                     </div>
+                    </form>
+                </div>
                 </div>
 
             </div>
