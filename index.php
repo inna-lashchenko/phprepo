@@ -48,25 +48,11 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
             cursor: pointer;
 
         }
-        .fa-facebook-square{
-            font-size:52px;
-            margin-left:20px;
-            padding-top: 20px;
-            color:black;
-            display:block;
-        }
-        .fa-facebook-square:hover{
-            text-decoration: none;
-        }
     </style>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 
-    <![endif]-->
     <script>
         $(document).ready(function(){
             $('#contactForm').submit(function () {
@@ -87,7 +73,7 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
                             console.log(data);
                             if (data == "OK") {
                                 location.href='/main/mail/authorization.php';
-                                $('#myModal').modal('toggle');
+                                $('#myModal').hide();
                             }
                             else {
                                 $('#results').html(data);
@@ -101,17 +87,28 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
                 }
             });
             $('#registration').submit(function () {
-
+                var namee = $('#namee').val();
+                var display_name = $('#display_name').val();
+                var email = $('#e-mail').val();
                 var password = $('#password').val();
                 var password_confirmation = $('#password_confirmation').val();
-                if(password==password_confirmation){
+                console.log(namee, display_name, email, password, password_confirmation);
+                if(!namee||!display_name||!email||!password||!password_confirmation){
+                    $('#wempty').show();
+                }
+                else if(password==password_confirmation){
                     var msg = $(this).serialize();
                     $.ajax({
                         type: 'POST',
                         url: 'main/mail/registration.php',
                         data: msg,
-                        success: function(){
-                            $('#register').modal('toggle');
+                        success: function(data){
+                            if(data=="OK"){$('#register').modal('toggle');}
+                            else if(data==1){$('#wempty').show();}
+                            else if(data==2){$('#wnamee').show();}
+                            else if(data==3){$('#wdisplay_name').show();}
+                            else if(data==4){$('#we-mail').show();}
+                            else if(data==5){$('#wpassword').show();}
                         },
                         error:  function(xhr, str){
                             alert('Возникла ошибка: ' + xhr.responseCode);
@@ -161,6 +158,12 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
                 <ul class="nav navbar-nav navbar-right">
                     <li class="hidden">
                         <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="main/mail/search.html">Search</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="main/mail/map.html">Map</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#services">Services</a>
@@ -535,15 +538,12 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" style="color:white; font-weight: bold;">Name:</label> <input type="text" class="form-control" placeholder="Your Name *" id="name" name="name" data-validation-required-message="Please enter your name.">
-                                    <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
                                     <label for="email" style="color:white; font-weight: bold;">E-mail: </label><input type="email" class="form-control" placeholder="Your Email *" id="email" name="email" data-validation-required-message="Please enter your email address.">
-                                    <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
                                     <label for="phone" style="color:white; font-weight: bold;">Phone: </label><input type="tel" class="form-control" placeholder="Your Phone *" id="phone" name="phone" data-validation-required-message="Please enter your phone number.">
-                                    <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -584,79 +584,71 @@ $loginUrl = $helper->getLoginUrl('http://localhost:8000/main/mail/init.php');
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Registration form</h4>
+                        <h4 class="modal-title">Sign up</h4>
                     </div>
                     <!-- Modal content-->
                     <div class="container">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-8 col-md-6" style="padding:30px;">
-<!--                                <div class="row"><button type="button" class="close" data-dismiss="modal">&times;</button></div>-->
+                            <div class="col-xs-12 col-sm-8 col-md-6" style="padding:20px;">
                                 <form id="registration" method="post" action="javascript:void(null);">
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <input type="text" name="first_name" id="first_name" class="form-control input-lg" placeholder="First Name" tabindex="1">
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <input type="text" name="last_name" id="last_name" class="form-control input-lg" placeholder="Last Name" tabindex="2">
-                                            </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="wempty">*Fill empty fields</span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <span class="warning text-danger" id="wfirst_name">*Incorrect first name</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <span class="warning text-danger" id="wlast_name">*Incorrect last name</span>
-                                            </div>
+                                    <div class="form-group">
+                                        <label for="name" class="col-md-3 control-label">Name</label>
+                                        <div class="col-md-9">
+                                            <input type="text" name="name" id="namee" class="form-control input-lg" placeholder="Name" tabindex="1">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group">
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="wnamee">*Incorrect name</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="display_name" class="col-md-3 control-label">Display Name</label>
+                                        <div class="col-md-9">
                                             <input type="text" name="display_name" id="display_name" class="form-control input-lg" placeholder="Display Name" tabindex="3">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <span class="warning text-danger">*Incorrect display name</span>
-                                            </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="wdisplay_name">*Incorrect display name</span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="e-mail" class="col-md-3 control-label">E-mail</label>
+                                        <div class="col-md-9">
                                             <input type="email" name="email" id="e-mail" class="form-control input-lg" placeholder="Email Address" tabindex="4">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <span class="warning text-danger">*Incorrect e-mail</span>
-                                            </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="we-mail">*Incorrect e-mail</span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password" tabindex="5">
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-lg" placeholder="Confirm Password" tabindex="6">
-                                            </div>
+                                    <div class="form-group">
+                                        <label for="password" class="col-md-3 control-label">Password</label>
+                                        <div class="col-md-9">
+                                            <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password" tabindex="5">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-6 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <span class="warning text-danger">*Incorrect password</span>
-                                            </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="wpassword">*Incorrect password</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password_confirmation" class="col-md-3 control-label">Confirm password</label>
+                                        <div class="col-md-9">
+                                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-lg" placeholder="Confirm Password" tabindex="6">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-offset-3">
+                                            <span class="warning text-danger" id="wpassword_confirmation">*Incorrect confirmation</span>
                                         </div>
                                     </div>
                                     <div class="row">
